@@ -12,10 +12,20 @@ export class HomeComponent implements OnInit {
   constructor(private websocketService: WebsocketService, private notifier: NotifierService) { }
 
   ngOnInit(): void {
+
+    Notification.requestPermission().then((permission) => {
+      console.log(permission);
+    });
+
     this.websocketService.initWebSocket().then(() => {
       this.websocketService.subscribe("/topic/notification", (event) => {
         console.log(event.body);
-        this.notifier.notify('success', (event.body as unknown as {payload: string}).payload);
+        const payload = (event.body as unknown as { payload: string }).payload;
+        if (Notification.permission == "granted") {
+          new Notification("A new product has been created", { body: payload });
+        } else {
+          this.notifier.notify('info', payload);
+        }
       });
     });
   }
