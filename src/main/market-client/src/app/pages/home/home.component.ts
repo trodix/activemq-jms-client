@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  constructor(private websocketService: WebsocketService) { }
 
   ngOnInit(): void {
+    this.websocketService.initWebSocket().then(() => {
+      this.websocketService.subscribe("/topic/notification", (event) => {
+        console.log(event.body);
+      });
+    });
   }
+
+
+
 
 }
